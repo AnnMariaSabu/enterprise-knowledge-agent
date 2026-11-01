@@ -1,0 +1,31 @@
+ACME CORP - TRAVEL POLICY
+Version 3.0 - Applies to all employees travelling for work
+
+1. APPROVAL
+All business trips must be approved by your manager before booking.
+Trips longer than 5 days also need approval from your department director.
+
+2. FLIGHTS
+Book flights at least 14 days before the trip to get lower prices.
+Economy class is required for flights shorter than 6 hours.
+Business class is allowed for flights of 6 hours or longer, with
+director approval.
+
+3. HOTELS
+The hotel limit is 150 US dollars per night for domestic trips.
+The hotel limit is 220 US dollars per night for international trips.
+Book hotels through the Acme Travel portal whenever possible.
+
+4. MEALS
+The meal allowance is 50 US dollars per day for domestic trips.
+The meal allowance is 75 US dollars per day for international trips.
+Alcohol is not reimbursed.
+
+5. EXPENSES
+Submit your expense report within 30 days after the trip ends.
+Attach receipts for every expense above 25 US dollars.
+Late expense reports may not be reimbursed.
+
+6. TRAVEL INSURANCE
+All employees on approved business trips are automatically covered
+by company travel insurance. No action is needed.

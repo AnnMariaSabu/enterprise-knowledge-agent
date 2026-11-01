@@ -1,0 +1,20 @@
+ACME CORP - SERVER ADMIN GUIDE (CONFIDENTIAL - IT ONLY)
+Version 1.2 - For the IT team only
+
+1. BACKUPS
+Full backups of all company servers run every night at 2:00 AM.
+Backups are kept for 30 days.
+A monthly backup restore test is done on the first Monday of each month.
+
+2. SERVER MAINTENANCE
+Planned maintenance happens on the last Sunday of each month,
+from 10:00 PM to 2:00 AM. Employees are told 7 days in advance.
+
+3. ADMIN ACCOUNTS
+Admin accounts are separate from normal user accounts.
+Admin passwords must be at least 20 characters long and are changed
+every 30 days. Admin access is reviewed every 3 months.
+
+4. SECURITY INCIDENTS
+Any security incident must be reported to the IT security lead within
+1 hour. The incident response team meets within 4 hours of a report.

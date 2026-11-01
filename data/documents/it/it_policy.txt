@@ -1,0 +1,29 @@
+ACME CORP - IT POLICY
+Version 1.4 - Applies to all employees
+
+1. PASSWORDS
+Passwords must be at least 12 characters long and include a number and
+a symbol. Passwords must be changed every 90 days. You cannot reuse any
+of your last 5 passwords. Never share your password with anyone,
+including the IT team.
+
+2. MULTI-FACTOR AUTHENTICATION
+Multi-factor authentication (MFA) is required for email, the HR portal
+and the VPN. Use the Acme Authenticator app on your phone.
+
+3. VPN
+You must connect to the company VPN when working outside the office,
+including from home, hotels, airports and cafes. The VPN is not required
+when you are connected to the office network.
+
+4. LAPTOPS AND DEVICES
+Every employee receives a company laptop. Laptops are replaced every
+3 years. You may not install software yourself; request new software
+through the IT helpdesk. A lost or stolen device must be reported to IT
+within 24 hours.
+
+5. IT HELPDESK
+The IT helpdesk is open Monday to Friday, 8:00 AM to 6:00 PM.
+Email: helpdesk@acmecorp.example
+Phone extension: 4357
+For urgent problems outside these hours, call the on-call number 555-0100.

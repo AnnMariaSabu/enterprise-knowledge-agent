@@ -1,0 +1,21 @@
+ACME CORP - SALARY BANDS (CONFIDENTIAL - HR ONLY)
+Version 2026 - Do not share outside the HR department
+
+1. ENGINEERING
+Junior Engineer: 45,000 to 60,000 US dollars per year
+Engineer: 60,000 to 85,000 US dollars per year
+Senior Engineer: 85,000 to 115,000 US dollars per year
+Lead Engineer: 115,000 to 140,000 US dollars per year
+
+2. SALES
+Sales Associate: 40,000 to 55,000 US dollars per year, plus commission
+Sales Manager: 70,000 to 95,000 US dollars per year, plus commission
+
+3. HUMAN RESOURCES
+HR Assistant: 38,000 to 50,000 US dollars per year
+HR Manager: 75,000 to 100,000 US dollars per year
+
+4. ANNUAL REVIEW
+Salaries are reviewed every year in March.
+The standard yearly increase is between 2 and 5 percent,
+based on performance rating.
