@@ -10,8 +10,8 @@ EMBED_MODEL = "nomic-embed-text"
 # --- Database ---
 COLLECTION_NAME = "acme_policies"
 # --- Chunking and search ---
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 100
+CHUNK_SIZE = 80
+CHUNK_OVERLAP = 20
 TOP_K = 3
 # --- Files we can read ---
 SUPPORTED_EXTENSIONS = {".txt", ".pdf", ".docx"}
