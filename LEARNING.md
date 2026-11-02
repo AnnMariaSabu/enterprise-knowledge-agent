@@ -43,6 +43,9 @@
 - **if statement:** runs code only when a condition is true.
 - **Path:** a smart way to write file and folder locations.
   / joins folder names, and it works on Windows and Mac.
+- **Git vs GitHub:** Git saves snapshots on my laptop (offline).
+  GitHub is a website that stores my project online.
+  Code only goes to GitHub when I run git push.
 
 ### Commands I can use now
 - python -m venv .venv          -> create a virtual environment
