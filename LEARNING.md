@@ -65,3 +65,15 @@
 ### What I'm proud of
 - I started my first project journey, and my own Python code
   talked to an AI running on my laptop!
+
+
+
+
+
+  - **Embedding:** a list of 768 numbers that represents the meaning of text.
+  Similar meaning = similar numbers ("GPS for meaning").
+- **Cosine similarity:** a score for how much two embeddings point the same
+  way. 1 = same meaning, 0 = unrelated. The ranking matters more than the
+  exact number.
+- **Experiment:** "ill / time off with pay" scored high for "sick days"
+  with no shared words, so the model understands meaning, not just words.
