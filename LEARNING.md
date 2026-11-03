@@ -77,3 +77,108 @@
   exact number.
 - **Experiment:** "ill / time off with pay" scored high for "sick days"
   with no shared words, so the model understands meaning, not just words.
+
+
+
+  
+---
+
+## Phase 2 - Prepare the documents (2-3 November 2026)
+
+### What I built
+- **loaders.py**: reads text from .txt, .pdf and .docx files.
+  load_text() looks at the file ending and picks the right reader.
+- **chunker.py**: cuts text into overlapping chunks of 80 words
+  (20 words overlap), so no word is cut in half.
+- **embed_playground.py**: experiments with embeddings and my own
+  cosine similarity function.
+- **chroma_playground.py**: practised storing, searching, filtering
+  and deleting in ChromaDB.
+- **ingest.py**: one command (python ingest.py) loads all 7 documents
+  (19 chunks) into ChromaDB. It only redoes what changed:
+  - unchanged file -> skipped
+  - changed file -> old chunks deleted, new chunks saved
+  - new file -> added
+  - deleted file -> its chunks removed
+- **peek_db.py**: shows every chunk id and its labels in the database.
+
+### New words I learned
+- **Chunk:** a small piece of a document (like an index card).
+  Small pieces make search more precise.
+- **Overlap:** each chunk repeats the end of the previous one,
+  so a fact cut at the edge still appears whole somewhere.
+- **Embedding:** a list of 768 numbers that represents the meaning
+  of text. Similar meaning = similar numbers ("GPS for meaning").
+- **Vector:** a list of numbers. An embedding is a vector.
+- **Cosine similarity:** a score for how much two vectors point the
+  same way. 1 = same meaning, 0 = unrelated.
+- **Distance:** what ChromaDB shows. Distance = 1 - similarity.
+  Smaller distance = better match.
+- **Vector database (ChromaDB):** stores chunks with their embeddings
+  and labels, and quickly finds the ones closest to a question.
+- **Collection:** a named group of items in ChromaDB (like a drawer).
+- **Metadata:** labels on each chunk (source, department, access,
+  chunk_index, file_hash). Used for sources and permissions.
+- **Upsert:** update if the id exists, insert if it doesn't.
+- **Idempotent:** running something twice gives the same result as
+  running it once (no duplicates).
+- **Hash (fingerprint):** a code made from a file's content. Same
+  content = same hash. Change one letter = completely different hash.
+  Used to spot changed files.
+- **Refactoring:** reorganising code without changing what it does
+  (I moved the ingest code into run_ingest() so other files can use it).
+- **Infinite loop:** a loop that never stops. Stop it with Ctrl + C.
+- **Traceback:** Python's error report. Read it from the bottom up:
+  the last line says WHAT went wrong, the lines above say WHERE.
+
+### Python I learned
+- **def / return:** create a reusable function and give back a result.
+- **if __name__ == "__main__":** only run this code when I start the
+  file directly, not when another file imports it.
+- **Slicing:** text[:200], words[start:start + size], vectors[1:]
+- **.append()** adds to a list, **.add()** adds to a set.
+- **"\n".join(list)** glues items together. **.split()** does the opposite.
+- **if / elif / else:** choose between several options. == compares.
+- **raise ValueError("...")**: stop with a clear error message on purpose.
+- **f-strings:** f"Chunk {i}" puts values inside text.
+- **while loop:** repeat as long as a condition is true.
+- **break:** leave the loop completely. **continue:** skip to the next round.
+- **enumerate:** gives a counter and the item: for i, chunk in enumerate(chunks)
+- **zip:** walks through two or more lists side by side.
+- **Dictionary .get():** returns None instead of crashing if the key is missing.
+- **set():** an empty set ({} would be an empty dictionary).
+- **in / not in:** check if something is inside a list, set or tuple.
+- Importing from my own files: from loaders import load_text
+
+### Experiments and what I found
+- "Staff who are ill can take time off with pay" matched
+  "How many sick days do I get?" with NO shared words.
+  The model understands meaning, not just words.
+- Unrelated sentences still scored about 0.5, not 0.
+  The ranking matters more than the exact number.
+- Removing the search_query / search_document labels lowered all scores
+  but kept the same ranking. One small test isn't proof; I'll measure
+  properly in Phase 6.
+- ChromaDB's distance (0.191) was exactly 1 - my own similarity (0.809).
+  So I understand what happens inside the database.
+- A database search always returns the closest match, even if it's a
+  bad one. I'll need an "I don't know" check in Phase 3.
+
+### Mistakes I made and what I learned
+- Ran a file before saving it. Lesson: check for the white dot on the
+  tab and press Ctrl + S before running.
+- Deleted the test part of a file by accident, so nothing printed.
+  Lesson: "no output and no error" means nothing asked Python to print.
+- Changed the code but forgot to update config.py (got 1 big chunk).
+  Lesson: settings in config.py affect the whole project.
+- Got stuck in "git log" showing (END). Lesson: press q to quit.
+- Some words looked joined in the terminal ("sickleave"), but the file
+  was fine. Lesson: check the source file before changing it.
+
+### What confused me
+- The sliding window logic in split_text at first. Adding a print inside
+  the loop and watching it run helped me understand it.
+
+### What I'm proud of
+- One command now loads all my documents into a vector database, and it
+  is smart enough to notice new, changed and deleted files.
