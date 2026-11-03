@@ -6,6 +6,7 @@ import config
 
 NO_ANSWER = "I don't know based on the company documents."
 
+
 SYSTEM_PROMPT = f"""You are Acme Corp's policy assistant. You answer employee questions.
 
 Rules:
@@ -17,7 +18,6 @@ Rules:
 
 Example of a good answer:
 The office closes at 6 PM on Fridays. [2]"""
-
 
 def get_collection():
     client = chromadb.PersistentClient(path=str(config.CHROMA_DIR))

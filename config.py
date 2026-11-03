@@ -13,6 +13,6 @@ COLLECTION_NAME = "acme_policies"
 CHUNK_SIZE = 80
 CHUNK_OVERLAP = 20
 TOP_K = 3
-MAX_DISTANCE = 0.4    # if the best chunk is further than this, say "I don't know"
+MAX_DISTANCE = 1.0  # if the best chunk is further than this, say "I don't know"
 # --- Files we can read ---
 SUPPORTED_EXTENSIONS = {".txt", ".pdf", ".docx"}

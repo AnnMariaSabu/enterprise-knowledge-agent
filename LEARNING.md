@@ -182,3 +182,6 @@
 ### What I'm proud of
 - One command now loads all my documents into a vector database, and it
   is smart enough to notice new, changed and deleted files.
+  - **Temperature:** how the AI picks each next word. 0 = always the most
+  likely word (same answer every time, good for facts). 1 = more random
+  (different answers, sometimes wrong). My project uses 0.
