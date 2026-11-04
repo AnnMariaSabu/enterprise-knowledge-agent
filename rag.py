@@ -2,6 +2,7 @@ import chromadb
 import ollama
 
 import config
+from permissions import search_filter
 
 
 NO_ANSWER = "I don't know based on the company documents."
@@ -18,9 +19,24 @@ Rules:
 Example of a good answer:
 The office closes at 6 PM on Fridays. [2]"""
 
-REWRITE_PROMPT = """Rewrite the user's last question so it makes sense on its own,
-using the conversation for missing details. Keep the same meaning.
-Reply with ONLY the rewritten question, nothing else."""
+REWRITE_PROMPT = """You help a search engine. Look at the conversation and the user's last question.
+
+- If the last question depends on the conversation (for example it uses words like
+  "it", "them", "ones", "that" or "and for..."), rewrite it so it makes sense on its own.
+- If the last question is already complete, or is about a NEW topic,
+  return it EXACTLY as it is. Never change its topic.
+
+Reply with ONLY the question, nothing else.
+
+Example 1:
+Conversation: the user asked about annual leave days.
+Last question: Can I carry them over?
+Reply: Can I carry over unused annual leave days?
+
+Example 2:
+Conversation: the user asked about passwords.
+Last question: What is the capital of France?
+Reply: What is the capital of France?"""
 
 
 def get_collection():
@@ -28,13 +44,17 @@ def get_collection():
     return client.get_collection(config.COLLECTION_NAME)
 
 
-def retrieve(question, k=config.TOP_K):
+def retrieve(question, role, k=config.TOP_K):
     collection = get_collection()
 
     response = ollama.embed(model=config.EMBED_MODEL, input="search_query: " + question)
     question_vector = response["embeddings"][0]
 
-    results = collection.query(query_embeddings=[question_vector], n_results=k)
+    results = collection.query(
+        query_embeddings=[question_vector],
+        n_results=k,
+        where=search_filter(role),
+    )
 
     chunks = []
     for text, meta, distance in zip(
@@ -77,11 +97,11 @@ def build_messages(question, chunks):
     ]
 
 
-def answer(question, history=None):
+def answer(question, role, history=None):
     search_question = rewrite_question(question, history)
-    chunks = retrieve(search_question)
+    chunks = retrieve(search_question, role)
 
-    if chunks[0]["distance"] > config.MAX_DISTANCE:
+    if not chunks or chunks[0]["distance"] > config.MAX_DISTANCE:
         return {"answer": NO_ANSWER, "sources": [], "passages": [],
                 "search_question": search_question}
 
@@ -110,7 +130,8 @@ def answer(question, history=None):
 
 
 if __name__ == "__main__":
-    print("Acme Policy Assistant. Type 'quit' to stop.")
+    role = input("Your role (Employee / HR / IT / Admin): ").strip()
+    print(f"Acme Policy Assistant ({role}). Type 'quit' to stop.")
 
     while True:
         question = input("\nAsk: ").strip()
@@ -120,7 +141,7 @@ if __name__ == "__main__":
         if not question:
             continue
 
-        result = answer(question)
+        result = answer(question, role)
         print("\nAnswer:", result["answer"])
         if result["sources"]:
             print("Sources:", ", ".join(result["sources"]))
