@@ -18,6 +18,10 @@ Rules:
 Example of a good answer:
 The office closes at 6 PM on Fridays. [2]"""
 
+REWRITE_PROMPT = """Rewrite the user's last question so it makes sense on its own,
+using the conversation for missing details. Keep the same meaning.
+Reply with ONLY the rewritten question, nothing else."""
+
 
 def get_collection():
     client = chromadb.PersistentClient(path=str(config.CHROMA_DIR))
@@ -40,6 +44,26 @@ def retrieve(question, k=config.TOP_K):
     return chunks
 
 
+def rewrite_question(question, history):
+    if not history:
+        return question
+
+    conversation = ""
+    for message in history[-4:]:
+        conversation = conversation + f"{message['role']}: {message['content']}\n"
+
+    messages = [
+        {"role": "system", "content": REWRITE_PROMPT},
+        {"role": "user", "content": f"Conversation:\n{conversation}\nLast question: {question}"},
+    ]
+    response = ollama.chat(
+        model=config.CHAT_MODEL,
+        messages=messages,
+        options={"temperature": 0},
+    )
+    return response["message"]["content"].strip()
+
+
 def build_messages(question, chunks):
     context = ""
     for i, chunk in enumerate(chunks, start=1):
@@ -53,13 +77,15 @@ def build_messages(question, chunks):
     ]
 
 
-def answer(question):
-    chunks = retrieve(question)
+def answer(question, history=None):
+    search_question = rewrite_question(question, history)
+    chunks = retrieve(search_question)
 
     if chunks[0]["distance"] > config.MAX_DISTANCE:
-        return {"answer": NO_ANSWER, "sources": [], "passages": []}
+        return {"answer": NO_ANSWER, "sources": [], "passages": [],
+                "search_question": search_question}
 
-    messages = build_messages(question, chunks)
+    messages = build_messages(search_question, chunks)
 
     response = ollama.chat(
         model=config.CHAT_MODEL,
@@ -69,7 +95,8 @@ def answer(question):
     answer_text = response["message"]["content"]
 
     if answer_text.startswith("I don't know"):
-        return {"answer": NO_ANSWER, "sources": [], "passages": []}
+        return {"answer": NO_ANSWER, "sources": [], "passages": [],
+                "search_question": search_question}
 
     sources = []
     passages = []
@@ -78,7 +105,8 @@ def answer(question):
             sources.append(chunk["source"])
         passages.append({"source": chunk["source"], "text": chunk["text"]})
 
-    return {"answer": answer_text, "sources": sources, "passages": passages}
+    return {"answer": answer_text, "sources": sources, "passages": passages,
+            "search_question": search_question}
 
 
 if __name__ == "__main__":

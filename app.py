@@ -1,5 +1,7 @@
 import streamlit as st
 
+import config
+from ingest import run_ingest
 from rag import answer
 
 
@@ -17,6 +19,22 @@ st.write("Ask me anything about Acme Corp's HR, IT and travel policies.")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+with st.sidebar:
+    if st.button("🆕 New chat"):
+        st.session_state.messages = []
+        st.rerun()
+
+    st.header("Add a document")
+    department = st.selectbox("Department", ["hr", "it", "travel"])
+    uploaded = st.file_uploader("Choose a file", type=["txt", "pdf", "docx"])
+
+    if uploaded is not None and st.button("Upload and add"):
+        save_path = config.DOCS_DIR / department / uploaded.name
+        save_path.write_bytes(uploaded.getvalue())
+        with st.spinner("Adding the document..."):
+            run_ingest()
+        st.success(f"Added {uploaded.name}. You can ask about it now!")
+
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
@@ -30,7 +48,9 @@ if question:
 
     with st.chat_message("assistant"):
         with st.spinner("Searching the policies..."):
-            result = answer(question)
+            result = answer(question, st.session_state.messages)
+        if result["search_question"] != question:
+            st.caption("🔎 Searched for: " + result["search_question"])
         st.write(result["answer"])
         show_sources(result["passages"])
 
