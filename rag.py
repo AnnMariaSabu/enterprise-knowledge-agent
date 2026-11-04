@@ -6,7 +6,6 @@ import config
 
 NO_ANSWER = "I don't know based on the company documents."
 
-
 SYSTEM_PROMPT = f"""You are Acme Corp's policy assistant. You answer employee questions.
 
 Rules:
@@ -18,6 +17,7 @@ Rules:
 
 Example of a good answer:
 The office closes at 6 PM on Fridays. [2]"""
+
 
 def get_collection():
     client = chromadb.PersistentClient(path=str(config.CHROMA_DIR))
@@ -57,7 +57,7 @@ def answer(question):
     chunks = retrieve(question)
 
     if chunks[0]["distance"] > config.MAX_DISTANCE:
-        return {"answer": NO_ANSWER, "sources": []}
+        return {"answer": NO_ANSWER, "sources": [], "passages": []}
 
     messages = build_messages(question, chunks)
 
@@ -69,14 +69,16 @@ def answer(question):
     answer_text = response["message"]["content"]
 
     if answer_text.startswith("I don't know"):
-        return {"answer": NO_ANSWER, "sources": []}
+        return {"answer": NO_ANSWER, "sources": [], "passages": []}
 
     sources = []
+    passages = []
     for chunk in chunks:
         if chunk["source"] not in sources:
             sources.append(chunk["source"])
+        passages.append({"source": chunk["source"], "text": chunk["text"]})
 
-    return {"answer": answer_text, "sources": sources}
+    return {"answer": answer_text, "sources": sources, "passages": passages}
 
 
 if __name__ == "__main__":
