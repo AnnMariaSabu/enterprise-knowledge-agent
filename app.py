@@ -2,6 +2,7 @@ import streamlit as st
 
 import config
 from ingest import run_ingest
+from permissions import ROLES
 from rag import answer
 
 
@@ -20,6 +21,11 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 with st.sidebar:
+    role = st.selectbox("Your role", ROLES)
+    if st.session_state.get("role") != role:
+        st.session_state.role = role
+        st.session_state.messages = []
+
     if st.button("🆕 New chat"):
         st.session_state.messages = []
         st.rerun()
@@ -48,7 +54,7 @@ if question:
 
     with st.chat_message("assistant"):
         with st.spinner("Searching the policies..."):
-            result = answer(question, st.session_state.messages)
+            result = answer(question, role, st.session_state.messages)
         if result["search_question"] != question:
             st.caption("🔎 Searched for: " + result["search_question"])
         st.write(result["answer"])
