@@ -1,5 +1,8 @@
+import re
+
 import chromadb
 import ollama
+from rank_bm25 import BM25Okapi
 
 import config
 from permissions import search_filter
@@ -38,10 +41,27 @@ Conversation: the user asked about passwords.
 Last question: What is the capital of France?
 Reply: What is the capital of France?"""
 
+STOPWORDS = {
+    "a", "an", "the", "is", "are", "am", "was", "be", "of", "to", "in", "on",
+    "at", "for", "and", "or", "with", "about", "do", "does", "did", "i", "my",
+    "me", "you", "your", "we", "what", "who", "which", "when", "where", "how",
+    "why", "can", "could", "should", "would", "will", "this", "that", "there",
+    "many", "much", "get",
+}
+
 
 def get_collection():
     client = chromadb.PersistentClient(path=str(config.CHROMA_DIR))
     return client.get_collection(config.COLLECTION_NAME)
+
+
+def tokenize(text):
+    words = re.findall(r"\w+", text.lower())
+    kept = []
+    for word in words:
+        if word not in STOPWORDS:
+            kept.append(word)
+    return kept
 
 
 def retrieve(question, role, k=config.TOP_K):
@@ -62,6 +82,68 @@ def retrieve(question, role, k=config.TOP_K):
     ):
         chunks.append({"text": text, "source": meta["source"], "distance": distance})
     return chunks
+
+
+def retrieve_hybrid(question, role, k=config.TOP_K):
+    collection = get_collection()
+    where = search_filter(role)
+    data = collection.get(where=where)
+    if not data["ids"]:
+        return []
+
+    chunks = {}
+    tokenized = []
+    for chunk_id, text, meta in zip(data["ids"], data["documents"], data["metadatas"]):
+        chunks[chunk_id] = {
+            "text": text,
+            "source": meta["source"],
+            "distance": 1.0,
+            "keyword_score": 0.0,
+            "rrf": 0.0,
+        }
+        tokenized.append(tokenize(text))
+
+    # 1. Meaning search (the librarian): rank every allowed chunk by distance
+    response = ollama.embed(model=config.EMBED_MODEL, input="search_query: " + question)
+    results = collection.query(
+        query_embeddings=[response["embeddings"][0]],
+        n_results=len(data["ids"]),
+        where=where,
+    )
+    rank = 1
+    for chunk_id, distance in zip(results["ids"][0], results["distances"][0]):
+        chunks[chunk_id]["distance"] = distance
+        chunks[chunk_id]["rrf"] += 1 / (config.RRF_K + rank)
+        rank += 1
+
+    # 2. Keyword search (Ctrl + F): rank chunks by BM25 score
+    bm25 = BM25Okapi(tokenized)
+    scores = bm25.get_scores(tokenize(question))
+    keyword_ranking = sorted(zip(scores, data["ids"]), reverse=True)
+    rank = 1
+    for score, chunk_id in keyword_ranking:
+        if score <= 0:
+            break
+        chunks[chunk_id]["keyword_score"] = score
+        chunks[chunk_id]["rrf"] += 1 / (config.RRF_K + rank)
+        rank += 1
+
+    # 3. Combine both rankings (the two judges): most points wins
+    combined = []
+    for chunk_id, chunk in chunks.items():
+        combined.append((chunk["rrf"], chunk_id))
+    combined.sort(reverse=True)
+
+    best = []
+    for rrf, chunk_id in combined[:k]:
+        best.append(chunks[chunk_id])
+    return best
+
+
+def search(question, role):
+    if config.SEARCH_MODE == "hybrid":
+        return retrieve_hybrid(question, role)
+    return retrieve(question, role)
 
 
 def rewrite_question(question, history):

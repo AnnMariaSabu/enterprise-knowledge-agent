@@ -28,5 +28,15 @@
   {"id": 27, "question": "How long must admin passwords be?", "role": "Employee", "answerable": false, "expected_source": null, "must_contain": [], "note": "permission test: IT-only"},
   {"id": 28, "question": "What time do the nightly server backups run?", "role": "Employee", "answerable": false, "expected_source": null, "must_contain": [], "note": "permission test: IT-only"},
   {"id": 29, "question": "What is the salary range for a senior engineer?", "role": "HR", "answerable": true, "expected_source": "hr/restricted/salary_bands.txt", "must_contain": ["85,000"], "note": "permission test: HR allowed"},
-  {"id": 30, "question": "How long must admin passwords be?", "role": "IT", "answerable": true, "expected_source": "it/restricted/server_admin_guide.txt", "must_contain": ["20"], "note": "permission test: IT allowed"}
+  {"id": 30, "question": "How long must admin passwords be?", "role": "IT", "answerable": true, "expected_source": "it/restricted/server_admin_guide.txt", "must_contain": ["20"], "note": "permission test: IT allowed"},
+  {"id": 31, "question": "What is the IT helpdesk phone extension?", "role": "Employee", "answerable": true, "expected_source": "it/it_policy.txt", "must_contain": ["4357"], "note": "hard: exact code"},
+  {"id": 32, "question": "Which number do I call for urgent IT problems at night?", "role": "Employee", "answerable": true, "expected_source": "it/it_policy.txt", "must_contain": ["555-0100"], "note": "hard: exact code"},
+  {"id": 33, "question": "Which app do I use for MFA?", "role": "Employee", "answerable": true, "expected_source": "it/it_policy.txt", "must_contain": ["Authenticator"], "note": "hard: abbreviation"},
+  {"id": 34, "question": "Am I allowed to store company files in Dropbox?", "role": "Employee", "answerable": true, "expected_source": "it/acceptable_use_policy.pdf", "must_contain": ["OneDrive"], "note": "hard: specific name"},
+  {"id": 35, "question": "Can I fly business class on a 7-hour flight?", "role": "Employee", "answerable": true, "expected_source": "travel/travel_policy.txt", "must_contain": ["director"], "note": "hard: needs reasoning"},
+  {"id": 36, "question": "I work 3 days a week. How much sick leave do I get?", "role": "Employee", "answerable": true, "expected_source": "hr/hr_policy.txt", "must_contain": ["6"], "note": "hard: unusual wording"},
+  {"id": 37, "question": "What happens to my leftover holiday days at the end of December?", "role": "Employee", "answerable": true, "expected_source": "hr/hr_policy.txt", "must_contain": ["lost"], "note": "hard: different words"},
+  {"id": 38, "question": "How much does it cost to replace a lost parking pass?", "role": "Employee", "answerable": true, "expected_source": "hr/parking_policy.txt", "must_contain": ["10"], "note": "hard: detail"},
+  {"id": 39, "question": "What is the gym allowance and how long must my password be?", "role": "Employee", "answerable": true, "expected_source": "hr/benefits_policy.docx", "must_contain": ["40", "12"], "note": "hard: two topics"},
+  {"id": 40, "question": "What is the meal allowance abroad and how long is paternity leave?", "role": "Employee", "answerable": true, "expected_source": "travel/travel_policy.txt", "must_contain": ["75", "2"], "note": "hard: two topics"}
 ]

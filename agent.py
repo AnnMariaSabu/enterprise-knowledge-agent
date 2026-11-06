@@ -1,7 +1,7 @@
 import ollama
 
 import config
-from rag import NO_ANSWER, retrieve
+from rag import NO_ANSWER, search
 
 MAX_STEPS = 4
 
@@ -29,6 +29,12 @@ NO_ANSWER_PHRASES = [
     "not available in",
     "cannot find",
     "can't find",
+    "don't have information",
+    "do not have information",
+    "did not provide",
+    "does not provide",
+    "doesn't provide",
+    "no details",
 ]
 
 search_tool = {
@@ -59,11 +65,13 @@ def sounds_like_no_answer(text):
 
 
 def search_documents(query, role, passages):
-    chunks = retrieve(query, role)
+    chunks = search(query, role)
 
     result_text = ""
     for chunk in chunks:
-        if chunk["distance"] <= config.MAX_DISTANCE:
+        close_meaning = chunk["distance"] <= config.MAX_DISTANCE
+        strong_keywords = chunk.get("keyword_score", 0) >= config.MIN_KEYWORD_SCORE
+        if close_meaning or strong_keywords:
             result_text = result_text + f"(source: {chunk['source']})\n{chunk['text']}\n\n"
             passage = {"source": chunk["source"], "text": chunk["text"]}
             if passage not in passages:

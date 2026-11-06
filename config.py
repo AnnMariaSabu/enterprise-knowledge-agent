@@ -15,4 +15,7 @@ CHUNK_OVERLAP = 20
 TOP_K = 3
 MAX_DISTANCE = 0.4  # if the best chunk is further than this, say "I don't know"
 # --- Files we can read ---
+SEARCH_MODE = "hybrid"
+MIN_KEYWORD_SCORE = 2.0
+RRF_K = 60
 SUPPORTED_EXTENSIONS = {".txt", ".pdf", ".docx"}
