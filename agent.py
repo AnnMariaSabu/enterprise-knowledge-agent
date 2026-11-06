@@ -17,6 +17,20 @@ Rules:
    Never add that sentence to an answer that already contains information.
 5. Answer in one to three full sentences."""
 
+NO_ANSWER_PHRASES = [
+    "i don't know",
+    "i do not know",
+    "not specified",
+    "not mentioned",
+    "no information",
+    "not found in",
+    "does not contain",
+    "doesn't contain",
+    "not available in",
+    "cannot find",
+    "can't find",
+]
+
 search_tool = {
     "type": "function",
     "function": {
@@ -36,12 +50,19 @@ search_tool = {
 }
 
 
+def sounds_like_no_answer(text):
+    lowered = text.lower()
+    for phrase in NO_ANSWER_PHRASES:
+        if phrase in lowered:
+            return True
+    return False
+
+
 def search_documents(query, role, passages):
     chunks = retrieve(query, role)
 
     result_text = ""
     for chunk in chunks:
-        
         if chunk["distance"] <= config.MAX_DISTANCE:
             result_text = result_text + f"(source: {chunk['source']})\n{chunk['text']}\n\n"
             passage = {"source": chunk["source"], "text": chunk["text"]}
@@ -91,16 +112,12 @@ def run_agent(question, role):
         )
         answer_text = response.message.content
 
-    answer_text = answer_text.strip()
+    cleaned = answer_text.replace(NO_ANSWER, "").strip()
 
-
-    if not passages or answer_text.startswith("I don't know"):
+    if not passages or not cleaned or sounds_like_no_answer(cleaned):
         return {"answer": NO_ANSWER, "searches": searches, "passages": []}
 
-    if NO_ANSWER in answer_text:
-        answer_text = answer_text.replace(NO_ANSWER, "").strip()
-
-    return {"answer": answer_text, "searches": searches, "passages": passages}
+    return {"answer": cleaned, "searches": searches, "passages": passages}
 
 
 if __name__ == "__main__":
